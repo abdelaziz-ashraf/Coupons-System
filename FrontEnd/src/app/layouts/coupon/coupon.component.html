@@ -1,0 +1,169 @@
+
+<div class="container pt-3" id="main">
+    <div class="create-new-coupon ">
+      <button type="button" class=" m-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Create New Coupon
+      </button>
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Create New Coupon
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form #addForm="ngForm" (ngSubmit)="onAddCoupon(addForm)">
+  
+                <div class="form-group">
+                  <label for="codeInput" class="col-sm-2 col-form-label">Code</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="codeInput"  
+                    name="code" 
+                    ngModel 
+                    #code = 'ngModel'
+                    required
+                    maxlength="15"
+                    minlength="5"
+                    [ngClass]="{'is-invalid' : code.touched && code.invalid}"
+                  />
+                  <div class="alert alert-danger" *ngIf='code.touched && code.invalid'>Code is required and must be between 5 and 15 chars </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="typeInput" class="col-sm-2 col-form-label">Type</label>
+                  <select 
+                    class="form-select" 
+                    id="typeInput" 
+                    ngModel 
+                    name="type"
+                    #type = 'ngModel'
+                    required
+                    [ngClass]="{'is-invalid' : type.touched && type.invalid}"
+                  >
+                    <option selected value="VALUE">VALUE</option>
+                    <option value="PERCENTAGE">PERCENTAGE</option>
+                  </select>
+                  <div class="alert alert-danger" *ngIf='type.touched && type.invalid'>Type is required. </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="valueInput" class="col-sm-2 col-form-label">Value</label>
+                  <input 
+                    type="number"
+                    class="form-control" 
+                    id="valueInput" 
+                    ngModel 
+                    name="value" 
+                    #value = 'ngModel'
+                    required
+                    max="500"
+                    min="5"
+                    [ngClass]="{'is-invalid' : value.touched && value.invalid}"
+                    />
+                    <div class="alert alert-danger" *ngIf='value.touched && value.invalid'>Value is required and must be between 5% and 100% or 15$ and 500$ </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="maxAllowedUsesInput" class="col-sm-2 col-form-label">Max Allowed Uses</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="maxAllowedUsesInput" 
+                    ngModel 
+                    name="maxAllowedUses" 
+                    #maxAllowedUses = 'ngModel'
+                    required
+                    max="1000"
+                    min="1"
+                    [ngClass]="{'is-invalid' : value.touched && value.invalid}"
+                    />
+                    <div class="alert alert-danger" *ngIf='maxAllowedUses.touched && maxAllowedUses.invalid'>Max Allowed Uses is required and must be between 1 and 1000. </div>
+                </div>
+  
+                <div class="form-group">
+                  <label for="expiryDateInput" class="col-sm-2 col-form-label">Expiry Date</label>
+                  <input 
+                    type="date" 
+                    class="form-control" 
+                    id="expiryDateInput" 
+                    ngModel 
+                    name="expiryDate"
+                    #expiryDate = 'ngModel'
+                    required
+                    [ngClass]="{'is-invalid' : expiryDate.touched && expiryDate.invalid}"
+                    />
+                    <div class="alert alert-danger" *ngIf='expiryDate.touched && expiryDate.invalid'>Expiry Date is required. </div>
+                </div>
+  
+                <div class="modal-footer">
+                  <button id="add-employee-form" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                  </button>
+                  <button [disabled]="!addForm.valid" type="submit" class="btn btn-primary">
+                    Create New Coupon
+                  </button>
+                </div>
+                
+              </form>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="error" class="alert alert-danger">{{errorMessage}}</div>
+
+    <div class="d-flex">
+      <button (click)="showActiveCoupons()" class="btn btn-success m-2 d-block">View Active Coupons</button>
+      <button (click)="showAllCoupons()" class="btn btn-warning m-2">View All Coupons</button>  
+    </div>
+    
+    <form class="d-flex" role="search"  #searchFoprm = "ngForm" (ngSubmit)="searchCouponByCode(searchFoprm)">
+      <input required="" class="form-control me-2" type="search" placeholder="Search By Coupon Code" aria-label="Search" ngModel name="code" >
+      <button [disabled]="!searchFoprm.valid" class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+    
+    <table class="table text-center">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Code</th>
+          <th scope="col">Type</th>
+          <th scope="col">Vlaue</th>
+          <th scope="col">Active</th>
+          <th scope="col">Max Allowed Uses</th>
+          <th scope="col">Usage Number</th>
+          <th scope="col">Expiry Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr  *ngFor="let coupon of coupons; let i = index">
+          <th>{{ i+1 }}</th>
+          <th>{{ coupon.code}}</th>
+          <td>{{ coupon.type | uppercase}}</td>
+  
+          <div *ngIf="coupon.type == 'VALUE'; then value else percent"></div>
+          <ng-template #value>
+            <td> {{coupon.value | currency}}</td>
+          </ng-template>
+          <ng-template #percent>
+            <td>{{coupon.value | percent}}</td>
+          </ng-template>
+  
+          <td>{{ coupon.active }}</td>
+          <td>{{ coupon.maxAllowedUses }}</td>
+          <td>{{ coupon.usageNumber || 0 }}</td>
+          <td>{{ coupon.expiryDate | date: 'longDate'}}</td>
+          <td>
+            <button (click)="deactivateCoupon(coupon.code)" class="btn btn-danger" [disabled]="!coupon.active">Deactivate</button>
+          </td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
