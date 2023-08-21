@@ -5,7 +5,11 @@ import com.miniFawry.couponAPI.Excptions.ExpiryDateException;
 import com.miniFawry.couponAPI.entity.enums.CouponType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,12 +18,17 @@ import java.util.Date;
 @Entity
 @Table(name = "coupons")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Coupon implements Serializable {
 
     // ToDo::  @Column(nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    @NotEmpty(message = "Code cannot be empty or null")
     private String code; // name
     private Long maxAllowedUses;
     private Long usageNumber;

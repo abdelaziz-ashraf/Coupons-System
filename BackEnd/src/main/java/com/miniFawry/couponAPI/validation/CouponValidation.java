@@ -9,7 +9,7 @@ import java.util.Date;
 public class CouponValidation {
 
 
-     public static boolean couponDateValidation(Coupon coupon) {
+     public static void couponDateValidation(Coupon coupon) {
 
         if(coupon.getCode().length() < 5 || coupon.getCode().length() > 15){
             throw new CouponCodeLengthException();
@@ -26,8 +26,6 @@ public class CouponValidation {
         if (coupon.getType().toUpperCase().equals("VALUE") && (coupon.getValue() < 10 || coupon.getValue() > 500)) {
             throw new ValueException("10$", "500$");
         }
-
-        return true;
     }
 
     public static boolean activeCoupon(Coupon coupon) {
