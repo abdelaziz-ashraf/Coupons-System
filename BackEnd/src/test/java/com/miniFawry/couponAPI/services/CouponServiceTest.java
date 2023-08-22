@@ -1,5 +1,8 @@
 package com.miniFawry.couponAPI.services;
 
+import com.miniFawry.couponAPI.Excptions.CouponInactiveException;
+import com.miniFawry.couponAPI.Excptions.CouponNotFoundException;
+import com.miniFawry.couponAPI.Excptions.HaveCodeWithSameNameException;
 import com.miniFawry.couponAPI.entity.ConsumptionHistory;
 import com.miniFawry.couponAPI.entity.Coupon;
 import com.miniFawry.couponAPI.entity.entityRequest.UseCouponReq;
@@ -20,8 +23,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 public class CouponServiceTest {
     @Mock
@@ -60,6 +62,21 @@ public class CouponServiceTest {
     }
 
     @Test
+    public void testCreateCoupon_WithExistingCode () {
+        // Arrange
+        Coupon coupon = new Coupon();
+        coupon.setCode("TEST123");
+
+        when(couponRepository.findByCode(any())).thenReturn(Optional.of(coupon));
+
+//        // Act
+//        couponsService.createCoupon(coupon);
+//
+//        // Assert
+        assertThrows(HaveCodeWithSameNameException.class, () -> couponsService.createCoupon(coupon));
+    }
+
+    @Test
     public void testDeactivateCoupon() {
         // Arrange
         String couponCode = "TEST123";
@@ -74,6 +91,14 @@ public class CouponServiceTest {
         // Assert / Verify
         verify(couponRepository, times(1)).save(existingCoupon);
         assertFalse(existingCoupon.isActive());
+    }
+
+    @Test
+    public void testDeactivateCoupon_WithNotExistingCode () {
+
+        when(couponRepository.findByCode(any())).thenThrow(CouponNotFoundException.class);
+
+        assertThrows(CouponNotFoundException.class, () -> couponsService.deactivateCoupon("TEST123"));
     }
 
     @Test
@@ -105,6 +130,14 @@ public class CouponServiceTest {
         // Assert
         assertEquals(couponCode, result.getCode());
         verify(couponRepository, times(1)).findByCode(couponCode);
+    }
+
+    @Test
+    public void testGetCouponByCode_WithNotExistingCode () {
+
+        when(couponRepository.findByCode(any())).thenThrow(CouponNotFoundException.class);
+
+        assertThrows(CouponNotFoundException.class, () -> couponsService.getCouponByCode("TEST123"));
     }
 
     @Test
@@ -162,4 +195,15 @@ public class CouponServiceTest {
         verify(consumptionHistoryRepository, times(1)).save(any(ConsumptionHistory.class));
         assertEquals(1L, coupon.getUsageNumber());
     }
+
+    @Test
+    public void testApplyCoupon_WithNotExistingCode () {
+
+        when(couponRepository.findByCode(any())).thenThrow(CouponNotFoundException.class);
+
+        assertThrows(CouponNotFoundException.class, () -> couponsService.applyCoupon("TEST123", new UseCouponReq()));
+    }
+
+
+
 }
