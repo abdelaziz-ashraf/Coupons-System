@@ -2,6 +2,7 @@ package com.miniFawry.couponAPI.service;
 
 import com.miniFawry.couponAPI.entity.Coupon;
 import com.miniFawry.couponAPI.entity.entityRequest.UseCouponReq;
+import com.miniFawry.couponAPI.entity.responses.CouponRes;
 import com.miniFawry.couponAPI.model.CouponModel;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public interface CouponsService {
     void createCoupon(Coupon coupon);
     void deactivateCoupon(String code);
-    CouponModel getCouponByCode(String code);
+    CouponRes getCouponByCode(String code);
     List<CouponModel> viewAllCoupons();
     List<CouponModel> getActiveCoupons();
 
