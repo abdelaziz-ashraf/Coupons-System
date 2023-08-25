@@ -3,6 +3,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/couponAPI-0.0.1-SNAPSHOT.jar couponAPI.jar
+COPY --from=build /target/couponapi-0.0.1-SNAPSHOT.jar couponapi.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","couponAPI.jar"]
+ENTRYPOINT ["java","-jar","couponapi.jar"]
+
+
